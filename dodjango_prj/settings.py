@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -120,6 +120,11 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+#기본으로 셋팅되어있음 파일들에 접근할수 있게 해줘라> 그래서 static 만들고 파일 적용
+MEDIA_URL = '/media/'
+#파일을 올린다 서버어딘가에 저장되어야함으로 지정
+MEDIA_ROOT = os.path.join(BASE_DIR, '_media')
+#실제파일은 프로젝트 파일에 언더바 미디어에 저장
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
