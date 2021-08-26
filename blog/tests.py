@@ -1,11 +1,20 @@
 from django.test import TestCase, Client
 from bs4 import BeautifulSoup
 from .models import Post
+from django.contrib.auth.models import User
 
 
 class TestView(TestCase):
     def setUp(self):
         self.client = Client()
+        self.user_trump = User.objects.create_user(
+            username='trump',
+            password='somepassword'
+        )
+        self.user_obama = User.objects.create_user(
+            username='obama',
+            password='somepassword'
+        )
 
     def navbar_test(self, soup):
         # 1.4 NavBar 가 있다.
@@ -46,12 +55,14 @@ class TestView(TestCase):
         post_001 = Post.objects.create(
             title=' 첫번째 포스트 입니다.',
             content='뭐라고 써볼까용요용',
+            author=self.user_trump
 
 
         )
         post_002 = Post.objects.create(
             title=' 두번째 포스트 입니다.',
             content='테스트 하겠습니다요옹옹',
+            author=self.user_obama
 
        )
         self.assertEqual(Post.objects.count(), 2)
@@ -66,12 +77,17 @@ class TestView(TestCase):
         # 3.4 "아직 게시물이 없습니다"라는 문구가 없어야 한다.
         self.assertNotIn('아직 게시물이 없습니다.', main_area.text)
 
+        self.assertIn(post_001.author.username.upper(), main_area.text)
+        self.assertIn(post_002.author.username.upper(), main_area.text)
+
+
     def test_post_detail(self):
 
         # 1.1 포스트 하나있음
         post_001 = Post.objects.create(
             title=' 첫번째 포스트 입니다.',
             content='뭐라고 써볼까용요용',
+            author=self.user_trump
 
         )
         self.assertEqual(Post.objects.count(), 1)
@@ -96,6 +112,7 @@ class TestView(TestCase):
         post_area = main_area.find('div', id='post-area')
         self.assertIn(post_001.title, post_area.text)
         # 2.5 첫번째 포스트의 작성자(author)가 포스트 영역에 있다( 아직 구현할수 없음)
+        self.assertIn(self.user_trump.username.upper(), post_area.text)
         # 2.6 첫번째 포스트의 내용(content)이 포스트 영역에 있다.
         self.assertIn(post_001.content, post_area.text)
 
