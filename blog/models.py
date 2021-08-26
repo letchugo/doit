@@ -14,7 +14,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now=True)
     update_at = models.DateTimeField(auto_now=True) #자동으로 작성시각과 수정시각 저장하는것
 
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f'[{self.pk}]{self.title} :: {self.author}'
