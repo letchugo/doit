@@ -10,20 +10,20 @@ class TestView(TestCase):
         self.user_trump = User.objects.create_user(username='trump', password='somepassword')
         self.user_obama = User.objects.create_user(username='obama', password='somepassword')
 
-        self.category_programming = Category.objects.create(name='programming', slug='programming')
-        self.category_music = Category.objects.create(name='music', slug='music')
+        self.category_culture= Category.objects.create(name='culture', slug='culture')
+        self.category_social = Category.objects.create(name='social', slug='social')
 
         self.post_001 = Post.objects.create(
             title='첫번째 포스트입니다.',
             content='Hello World. We are the world.',
-            category=self.category_programming,
+            category=self.category_culture,
             author=self.user_trump
         )
 
         self.post_002 = Post.objects.create(
             title='두번째 포스트입니다.',
             content='1등이 전부는 아니잖아요?',
-            category=self.category_music,
+            category=self.category_social,
             author=self.user_obama
         )
 
@@ -51,17 +51,19 @@ class TestView(TestCase):
         self.assertEqual(about_me_btn.attrs['href'], '/about_me/')
 
     def category_card_test(self, soup):
+
+        #print("soup ::::::::::::::: ", soup);
         categories_card = soup.find('div', id='categories-card')
         self.assertIn('Categories', categories_card.text)
         self.assertIn(
-            f'{self.category_programming.name} ({self.category_programming.post_set.count()})',
+            f'{self.category_culture.name} ({self.category_culture.post_set.count()})',
             categories_card.text
         )
         self.assertIn(
-            f'{self.category_music.name} ({self.category_music.post_set.count()})',
+            f'{self.category_social.name} ({self.category_social.post_set.count()})',
             categories_card.text
         )
-        self.assertIn(f'미분류 (1)', categories_card.text)
+        self.assertIn(f'미분류(1 )', categories_card.text)
 
     def test_post_list(self):
         # Post가 있는 경우
@@ -70,6 +72,7 @@ class TestView(TestCase):
         response = self.client.get('/blog/')
         self.assertEqual(response.status_code, 200)
         soup = BeautifulSoup(response.content, 'html.parser')
+
         self.navbar_test(soup)
         self.category_card_test(soup)
 
@@ -115,23 +118,26 @@ class TestView(TestCase):
         main_area = soup.find('div', id='main-area')
         post_area = main_area.find('div', id='post-area')
         self.assertIn(self.post_001.title, post_area.text)
-        self.assertIn(self.category_programming.name, post_area.text)
+        self.assertIn(self.category_culture.name, post_area.text)
 
         self.assertIn(self.user_trump.username.upper(), post_area.text)
         self.assertIn(self.post_001.content, post_area.text)
 
     def test_category_page(self):
-        response = self.client.get(self.category_programming.get_absolute_url())
-        # self.assertEqual(response.status_code, 200)
-        soup = BeautifulSoup(response.content, 'html.parser')
 
+        response = self.client.get(self.category_culture.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
         self.navbar_test(soup)
         self.category_card_test(soup)
 
-        self.assertIn(self.category_programming.name, soup.h1.text)
+        #print("self.category_culture.name ::::::::::::::: ", self.category_culture)
+        print("soup.h1.text :::::::::::", soup)
+        self.assertIn(self.category_culture.name, soup.h1.text)
 
         main_area = soup.find('div', id='main-area')
-        self.assertIn(self.category_programming.name, main_area.text)
+        self.assertIn(self.category_culture.name, main_area.text)
         self.assertIn(self.post_001.title, main_area.text)
         self.assertNotIn(self.post_002.title, main_area.text)
         self.assertNotIn(self.post_003.title, main_area.text)
