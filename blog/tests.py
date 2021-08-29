@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from bs4 import BeautifulSoup
 from django.contrib.auth.models import User
-from .models import Post, Category
+from .models import Post, Category, Tag
 
 
 class TestView(TestCase):
@@ -13,12 +13,25 @@ class TestView(TestCase):
         self.category_culture= Category.objects.create(name='culture', slug='culture')
         self.category_social = Category.objects.create(name='social', slug='social')
 
+        self.tag_python_kor = Tag.objects.create(
+            name='파이썬 공부', slug= '파이썬 공부'
+        )
+        self.tag_python = Tag.objects.create(
+            name='python', slug='python'
+        )
+        self.tag_hello = Tag.objects.create(
+            name='hello', slug='hello'
+        )
+
+
+
         self.post_001 = Post.objects.create(
             title='첫번째 포스트입니다.',
             content='Hello World. We are the world.',
             category=self.category_culture,
             author=self.user_trump
         )
+        self.post_001.tags.add(self.tag_hello)
 
         self.post_002 = Post.objects.create(
             title='두번째 포스트입니다.',
@@ -32,6 +45,8 @@ class TestView(TestCase):
             content='category가 없을 수도 있죠',
             author=self.user_obama
         )
+        self.post_003.tags.add(self.tag_python)
+        self.post_003.tags.add(self.tag_python_kor)
 
     def navbar_test(self, soup):
         navbar = soup.nav
@@ -83,14 +98,24 @@ class TestView(TestCase):
         self.assertIn(self.post_001.title, post_001_card.text)  # title이 있는지
         self.assertIn(self.post_001.category.name, post_001_card.text)  # category가 있는지
         self.assertIn(self.post_001.author.username.upper(), post_001_card.text)  # 작성자명이 있는지
+        self.assertIn(self.tag_hello.name, post_001_card.text)
+        self.assertNotIn(self.tag_python_kor.name, post_001_card.text)
+        self.assertNotIn(self.tag_python.name, post_001_card.text)
+
 
         post_002_card = main_area.find('div', id='post-2')
         self.assertIn(self.post_002.title, post_002_card.text)
         self.assertIn(self.post_002.category.name, post_002_card.text)
+        self.assertNotIn(self.tag_hello.name, post_002_card.text)
+        self.assertNotIn(self.tag_python_kor.name, post_002_card.text)
+        self.assertNotIn(self.tag_python.name, post_002_card.text)
 
         post_003_card = main_area.find('div', id='post-3')
         self.assertIn('미분류', post_003_card.text)
         self.assertIn(self.post_003.title, post_003_card.text)
+        self.assertNotIn(self.tag_hello.name, post_003_card.text)
+        self.assertIn(self.tag_python.name, post_003_card.text)
+        self.assertIn(self.tag_python_kor.name, post_003_card.text)
 
         self.assertIn(self.user_trump.username.upper(), main_area.text)
         self.assertIn(self.user_obama.username.upper(), main_area.text)
@@ -124,7 +149,6 @@ class TestView(TestCase):
         self.assertIn(self.post_001.content, post_area.text)
 
     def test_category_page(self):
-
         response = self.client.get(self.category_culture.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
@@ -132,11 +156,10 @@ class TestView(TestCase):
         self.navbar_test(soup)
         self.category_card_test(soup)
 
-        #print("self.category_culture.name ::::::::::::::: ", self.category_culture)
-        print("soup.h1.text :::::::::::", soup)
-        self.assertIn(self.category_culture.name, soup.h1.text)
-
         main_area = soup.find('div', id='main-area')
+        #print("self.category_culture.name ::::::::::::::: ", self.category_culture)
+        # print("soup.h1.text :::::::::::", soup)
+        self.assertIn(self.category_culture.name, main_area.h1.text)
         self.assertIn(self.category_culture.name, main_area.text)
         self.assertIn(self.post_001.title, main_area.text)
         self.assertNotIn(self.post_002.title, main_area.text)
