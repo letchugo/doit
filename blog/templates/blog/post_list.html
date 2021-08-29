@@ -2,11 +2,16 @@
 
 
 {% block main_area %}
-    <h1>Blog {% if category %}<span class="badge badge-secondary">{{ category }}</span>{% endif %}
- {% if tag %}
-<span class="badge badge-light"><i class="fas fa-tags"></i>{{ tag }}({{ tag.post_set.count }})</span>
- {% endif %}
-    </h1>
+{% if user.is_authenticated %}
+{% if user.is_superuser or user.is_staff %}
+<a type="button" href="/blog/create_post/" class="btn btn-info btn-sm float-right"><i class="fas fa-pencil-alt"></i>&nbsp; NEW POST</button></a>
+{% endif %}
+{% endif %}
+<h1>Blog {% if category %}<span class="badge badge-secondary">{{ category }}</span>{% endif %}
+    {% if tag %}
+    <span class="badge badge-light"><i class="fas fa-tags"></i>{{ tag }}({{ tag.post_set.count }})</span>
+    {% endif %}
+</h1>
 
 {% if post_list.exists %}
 
@@ -20,9 +25,9 @@
     {% endif %}
     <div class="card-body">
         {% if p.category %}
-            <span class="badge badge-secondary ">{{ p.category }}</span>
+        <span class="badge badge-secondary ">{{ p.category }}</span>
         {% else %}
-            <span class="badge badge-secondary ">미분류</span>
+        <span class="badge badge-secondary ">미분류</span>
         {% endif %}
 
         <h2 class="card-title">{{ p.title }}</h2>
@@ -32,12 +37,12 @@
         <p class="card-text">{{ p.content | truncatewords:10 }}</p>
 
         {% if p.tags.exists %}
-           <i class="fas fa-tags"></i>
+        <i class="fas fa-tags"></i>
         {% for tag in p.tags.iterator %}
-          <a href="{{ tag.get_absolute_url }}"><span class="badge rounded-pill bg-light text-dark">{{ tag }}</span></a>
+        <a href="{{ tag.get_absolute_url }}"><span class="badge rounded-pill bg-light text-dark">{{ tag }}</span></a>
         {% endfor %}
-           <br/>
-           <br/>
+        <br/>
+        <br/>
         {% endif %}
 
         <a href="{{ p.get_absolute_url }}" class="btn btn-primary">Read More &rarr;</a>
