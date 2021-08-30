@@ -25,7 +25,7 @@
     {% if user.is_authenticated and user == post.author %}
     <a type="button" href="/blog/update_post/{{ post.pk }}" class="btn btn-warning btn-sm float-right"><i class="fas fa-pencil-alt"></i>  수정하기</button></a>
     {% endif %}
-        
+
     <!-- Date/Time -->
     <p>Posted on {{ post.created_at }}</p>
 
