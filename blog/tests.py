@@ -188,7 +188,6 @@ class TestView(TestCase):
         response = self.client.get('/blog/create_post/')
         self.assertNotEqual(response.status_code, 200)
 
-
     def test_create_post_with_login(self):
         self.client.login(username='trump', password='somepassword')
         response = self.client.get('/blog/create_post/')
@@ -197,7 +196,6 @@ class TestView(TestCase):
         self.client.login(username='obama', password='somepassword')
         response = self.client.get('/blog/create_post/')
         self.assertEqual(response.status_code, 200)
-
 
         soup = BeautifulSoup(response.content, 'html.parser')
         self.assertEqual('Create Post - Blog', soup.title.text)
@@ -217,6 +215,47 @@ class TestView(TestCase):
         self.assertEqual(last_post.title, 'Post Form만들기')
         self.assertEqual(last_post.author.username, 'obama')
         self.assertEqual(last_post.content, '포스트페이지만들장')
+
+    def test_update_post(self):
+        update_post_url = f'/blog/update_post/{self.post_003.pk}/'
+
+        # 로그인 하지 않은 상태에서 접근하는 경우
+        response = self.client.get(update_post_url)
+        self.assertNotEqual(response.status_code, 200)
+
+        # 로그인은 했지만 , 작성자가 아닌 경우
+        self.assertNotEqual(self.post_003.author, self.user_trump)
+        self.client.login(username='trump', password='somepassword')
+        response = self.client.get(update_post_url)
+        self.assertNotEqual(response.status_code, 200)
+
+        # 작성자(obama)가 접근하는 경우
+
+        self.assertEqual(self.post_003.author, self.user_obama)
+        self.client.login(username='obama', password='somepassword')
+        response = self.client.get(update_post_url)
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        self.assertEqual('Edit Post - Blog', soup.title.text)
+        main_area = soup.find('div', id='main-area')
+        self.assertIn('Edit Post', main_area.text)
+
+        response = self.client.post(
+            update_post_url,
+            {
+                'title': '세번째 포스트 수정해볼깟???',
+                'content': '수정하는것이 무슨의미가 있나앗 뭣이 중헌디',
+                'category': self.category_social.pk
+            },
+            follow=True
+        )
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_area = soup.find('div', id='main-area')
+        self.assertIn('세번째 포스트 수정해볼깟???', main_area.text)
+        self.assertIn('수정하는것이 무슨의미가 있나앗 뭣이 중헌디', main_area.text)
+        self.assertIn(self.category_social.name, main_area.text)
+
 
 
 
