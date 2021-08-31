@@ -4,7 +4,7 @@
 {% block main_area %}
 {% if user.is_authenticated %}
 {% if user.is_superuser or user.is_staff %}
-<a type="button" href="/blog/create_post/" class="btn btn-info btn-sm float-right"><i class="fas fa-pencil-alt"></i>&nbsp; NEW POST</button></a>
+<a type="button" href="/blog/create_post/" class="btn btn-khaki btn-sm float-right"><i class="fas fa-pencil-alt"></i>&nbsp; NEW POST</button></a>
 {% endif %}
 {% endif %}
 <h1>Blog {% if category %}<span class="btn btn-outline-info">{{ category }}</span>{% endif %}

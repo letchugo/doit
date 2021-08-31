@@ -3,6 +3,17 @@ import os
 from django.contrib.auth.models import User
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return f'/blog/tag/{self.slug}/'
+
+
 class Category(models.Model):
     name = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
@@ -16,16 +27,6 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'
 
-class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return f'/blog/tag/{self.slug}/'
-
 
 class Post(models.Model):
     title = models.CharField(max_length=30)
@@ -36,7 +37,7 @@ class Post(models.Model):
     file_upload = models.FileField(upload_to='blog/files/%Y/%m/%d/', blank=True)
 
     created_at = models.DateTimeField(auto_now=True)
-    update_at = models.DateTimeField(auto_now=True) #자동으로 작성시각과 수정시각 저장하는것
+    update_at = models.DateTimeField(auto_now=True) # 자동으로 작성시각과 수정시각 저장하는것
 
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
@@ -53,4 +54,3 @@ class Post(models.Model):
 
     def get_file_ext(self):
         return self.get_file_name().split('.')[-1]
-
