@@ -38,7 +38,7 @@ class Post(models.Model):
     head_image = models.ImageField(upload_to='blog/images/%Y/%m/%d/', blank=True)
     file_upload = models.FileField(upload_to='blog/files/%Y/%m/%d/', blank=True)
 
-    created_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True) # 자동으로 작성시각과 수정시각 저장하는것
 
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
@@ -60,3 +60,16 @@ class Post(models.Model):
     def get_content_markdown(self):
         return markdown(self.content)
 
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()           # 마크다운 아닌 텍스트 필드로만 한이유는 화려하게 꾸밀수 없게 함
+    created_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)  # 자동으로 작성시각과 수정시각 저장하는것\
+
+    def __str__(self):
+        return f'{self.author}::{self.content}'
+
+    def get_absolute_url(self):
+        return f'{self.post.get_absolute_url()}#comment-{self.pk}'
