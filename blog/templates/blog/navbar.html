@@ -57,15 +57,12 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-6 col-sm-12">
-                        <a role="button" href="{% provider_login_url 'google'%}"
-                           type="button" class="btn btn-outline-dark btn-block btn-sm ">
-                            <i class="fab fa-google"></i>&nbsp&nbsp Log in with Google</abutton></a>
-                        <button type="button" class="btn btn-outline-dark btn-block btn-sm ">
-                            <i class="far fa-envelope"></i>&nbsp&nbsp Log in with E-mail</button>
+                        <a role="button" href="{% provider_login_url 'google'%}" type="button" class="btn btn-outline-dark btn-block btn-sm "><i class="fab fa-google"></i>&nbsp&nbsp Log in with Google</abutton></a>
+                        <a role="button" href="/accounts/login/" type="button" class="btn btn-outline-dark btn-block btn-sm "><i class="far fa-envelope"></i>&nbsp&nbsp Log in with username</abutton></a>
+
                     </div>
-                    <div class="col-md-6">
-                        <button type="button" class="btn btn-outline-dark btn-block btn-sm">
-                            <i class="far fa-envelope"></i>&nbsp&nbsp Sign Up with E-mail</button>
+                    <div class="col-md-6 col-sm-12">
+                        <a role="button" href="/accounts/signup/" type="button" class="btn btn-outline-dark btn-block btn-sm"> <i class="far fa-envelope"></i>&nbsp&nbsp Sign Up with E-mail</abutton></a>
                     </div>
                 </div>
             </div>
