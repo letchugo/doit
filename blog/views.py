@@ -94,6 +94,8 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
         # print("아무거나 찍어보자 ", self.request.POST.get('tags_str'))
         if tags_str:
             tags_str = tags_str.strip()  # strip : 스페이스없애주는것
+            tags_str = tags_str.strip('; ')
+            tags_str = tags_str.strip(', ')
             tags_str = tags_str.replace(',', ';')  # 컴마, 세미클론으로 바꿔줌 :모든걸 반영해주기위해
             tags_list = tags_str.split(';')
 
