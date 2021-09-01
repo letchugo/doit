@@ -1,10 +1,9 @@
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
-from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.utils.text import slugify
 from .models import Post, Category, Tag
-# from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied
 
 
 class PostList(ListView):
@@ -61,7 +60,7 @@ class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
                     self.object.tags.add(tag)
                 return response
         else:
-            return redirect('/blog/')
+                return redirect('/blog/')
 
 
 class PostUpdate(LoginRequiredMixin, UpdateView):
@@ -86,7 +85,8 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
             raise PermissionDenied
 
     def form_valid(self, form):
-        response = super(PostUpdate, self).form_valid(form)   # 폼베리드 기능추가 /
+        response = super(PostUpdate, self).form_valid(form)
+        # 폼베리드 기능추가 /form_valid() 함수는 유효한 폼 데이터로 처리할 로직 코딩/ django.http.HttpResponse 를 반환
         self.object.tags.clear()  # post 게시물 태그다 지움(delete 와 다름 (delete 는 db상 지움)/ 태그 연결을 끊어주는것)
 
         tags_str = self.request.POST.get('tags_str')
@@ -153,5 +153,17 @@ def tag_page(request, slug):
 #         'blog/index.html',
 #         {
 #             'posts': posts,
+#         }
+#     )
+
+
+# def single_post_page(request, pk):
+#     post = Post.objects.get(pk=pk)
+#
+#     return render(
+#         request,
+#         'blog/single_post_page.html',
+#         {
+#             'post': post,
 #         }
 #     )

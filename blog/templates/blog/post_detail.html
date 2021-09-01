@@ -41,7 +41,8 @@
     <hr>
 
     <!-- Post Content -->
-    <p>{{ post.content }}</p>
+    <p>{{ post.get_content_markdown | safe }}</p>
+               <!--   safe : 장고는 escape 기능이 기본으로 켜져있음/html코드 안보이게 해주는것-->
 
          {% if post.tags.exists %}
         <i class="fas fa-tags"></i>
